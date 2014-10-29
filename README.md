@@ -4,10 +4,16 @@ Python---NETCONF-table-to-dictionary
 A function that takes NETCONF GetReplys and converts a specified table to a dictionary of rows
 
 'return_table(raw, TABLE_FORMAT, ROW_FORMAT)' takes:
-  raw = NETCONF GetReply
-  TABLE_FORMAT = a string that represents what the table entry point looks like (see included test data in the source)
-  ROW_FORMAT = a string that represents what the desired rows look like (see included test data in the source)
-  returns a dictionary of rows
+
+raw = NETCONF GetReply
+  
+TABLE_FORMAT = a string that represents what the table entry point looks like (see included test data in the source)
+  
+ROW_FORMAT = a string that represents what the desired rows look like (see included test data in the source)
+
+RETURNS a dictionary of rows
+
+Warning - this function strips out any XML namespaces that are present. Do not expect integrity of namespaces!
   
     
     table_result = return_table(test_data,"TABLE_prefix","ROW_prefix")
