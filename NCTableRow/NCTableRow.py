@@ -173,10 +173,8 @@ def return_table(raw, TABLE_FORMAT, ROW_FORMAT):
                             ROW = []
                             DICTO = {}
                     if ROW_FORMAT not in str(el):
-                        if "*ROW*" in str(el):
-                            IN_ROW = False
-                            
-                        elif (("{" or "}") in str(el.tag)):
+                        
+                        if (("{" or "}") in str(el.tag)):
                             _start = el.tag.find("}")
                             RDATA = { el.tag[_start+1:] : el.text }
                             DICTO[el.tag[_start+1:]] = el.text
