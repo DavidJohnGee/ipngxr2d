@@ -4,6 +4,7 @@ Created on 29 Oct 2014
 @author: davidgee
 '''
 
+import sys
 from lxml import etree
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -150,45 +151,48 @@ def return_table(raw, TABLE_FORMAT, ROW_FORMAT):
     ROW_ITER = -1
     DICTO = {}
     
-    parser = etree.XMLParser(remove_blank_text=True)
-    root = etree.XML(str(raw), parser)
-    for el in root.iter('*'):
-        processed = False 
-        if TABLE_FOUND:
-            
-            if ROW_FORMAT in str(el):
-                IN_ROW = True
+    try:
+        parser = etree.XMLParser(remove_blank_text=True)
+        root = etree.XML(str(raw), parser)
+        for el in root.iter('*'):
+            processed = False 
+            if TABLE_FOUND:
                 
-            if IN_ROW == True:
                 if ROW_FORMAT in str(el):
-                    ROW_ITER += 1
-                    if "[]" not in str(ROW):
-                        ROWS[ROW_ITER] = ROW
-                        ROWS2[ROW_ITER] = DICTO
-                        processed = False
-                        ROW = []
-                        DICTO = {}
-                if ROW_FORMAT not in str(el):
-                    if (("{" or "}") in str(el.tag)):
-                        _start = el.tag.find("}")
-                        RDATA = { el.tag[_start+1:] : el.text }
-                        DICTO[el.tag[_start+1:]] = el.text
-                        ROW.append(RDATA)
+                    IN_ROW = True
                     
-                    elif (("{" or "}") not in str(el.tag)):
-                        RDATA = { el.tag : el.text }
-                        DICTO[el.tag] = el.text
-                        ROW.append(RDATA)
-
+                if IN_ROW == True:
+                    if ROW_FORMAT in str(el):
+                        ROW_ITER += 1
+                        if "[]" not in str(ROW):
+                            ROWS[ROW_ITER] = ROW
+                            ROWS2[ROW_ITER] = DICTO
+                            processed = False
+                            ROW = []
+                            DICTO = {}
+                    if ROW_FORMAT not in str(el):
+                        if (("{" or "}") in str(el.tag)):
+                            _start = el.tag.find("}")
+                            RDATA = { el.tag[_start+1:] : el.text }
+                            DICTO[el.tag[_start+1:]] = el.text
+                            ROW.append(RDATA)
+                        
+                        elif (("{" or "}") not in str(el.tag)):
+                            RDATA = { el.tag : el.text }
+                            DICTO[el.tag] = el.text
+                            ROW.append(RDATA)
+    
+                            
                         
                     
-                
-        if TABLE_FORMAT in str(el):
-            TABLE_FOUND = True
-    
-    ROW_ITER += 1
-    ROWS[ROW_ITER] = ROW
-    ROWS2[ROW_ITER] = DICTO
+            if TABLE_FORMAT in str(el):
+                TABLE_FOUND = True
+        
+        ROW_ITER += 1
+        ROWS[ROW_ITER] = ROW
+        ROWS2[ROW_ITER] = DICTO
+    except:
+        print "Something went wrong!: {0}".format(sys.exc_info()[0])
     return ROWS2
 
 #----------------- MAIN ENTRY POINT ---------------
