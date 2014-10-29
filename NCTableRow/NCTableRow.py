@@ -91,9 +91,6 @@ test_data = """<?xml version="1.0" encoding="ISO-8859-1"?>
                                               </mod:ROW_path>
                                             </mod:TABLE_path>
                                           </mod:ROW_prefix>
-                                          <mod:ROW_blah>
-                                            <mod:ipprefix>192.168.11.0/24</mod:ipprefix>
-                                          </mod:ROW_blah>
                                           <mod:ROW_prefix>
                                             <mod:ipprefix>192.168.11.0/24</mod:ipprefix>
                                             <mod:ucast-nhops>1</mod:ucast-nhops>
