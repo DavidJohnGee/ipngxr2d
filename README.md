@@ -3,26 +3,26 @@ Python - NETCONF-table-to-dictionary
 
 A function that takes NETCONF GetReplys and converts a specified table to a dictionary of rows
 
-'return_table(raw, TABLE_FORMAT, ROW_FORMAT)' takes:
+This Python function takes in XML and irrelevant of namespaces returns children of elements based on entry key and row match.
+Acknowledge this routine is for gathering children from an element. If all of the data you require is in this:
+<data>blah</data> format, then this will not work. if however your data looks like directly below, then you're in luck!
 
-raw = NETCONF GetReply
-  
-TABLE_FORMAT = a string that represents what the table entry point looks like (see included test data in the source)
-  
-ROW_FORMAT = a string that represents what the desired rows look like (see included test data in the source)
-
-RETURNS a dictionary of rows
-
-Warning - this function strips out any XML namespaces that are present. Do not expect integrity of namespaces!
-  
-    
-    table_result = return_table(test_data,"TABLE_prefix","ROW_prefix")
-
-    print "========== ROWS RETURNED =========="
-    for each in table_result:
-        print table_result[each]
-    
-    # For each row, use some of the data and make it human readable
-    print "\n========== PRETTY PRINT ========== "
-    for each in table_result:
-        print "PREFIX: " + str(table_result[each].get("ipprefix")) + " NEXT-HOP " + str(table_result[each].get("ipnexthop")) 
+<stuff>
+    <data>blah</data>
+        <interface>
+            <name>dave</name>
+            <speed>depends on beer/sleep ratio</speed>
+            <happy>mostly</happy>
+        </interface>
+        <interface>
+            <name>david</name>
+            <status>meh</status>
+        </interface>
+</stuff>
+ 
+In this case: tkey='data' and tvalue='blah', ROW_FORMAT= 'interface'
+You could also do this: tkey='stuff', tvalue=None, ROW_FORMAT='interface'
+ 
+Entry Key: This is the point at which the _loop_counterator reaches and start's 'looking' for the row keys.
+Row Keys: This is the row tag which contains children elements which will be added into a dictionary within a 'row' construct. 
+Returns: a Dictionary of dictionaries.
