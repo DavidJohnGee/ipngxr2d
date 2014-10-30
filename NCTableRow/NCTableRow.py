@@ -1,10 +1,33 @@
 '''
-Created on 29 Oct 2014
+Created on 20 Oct 2014
 
 @author: davidgee
+
+This Python function takes in XML and irrelevant of namespaces returns children of elements based on entry key and row match.
+Acknowledge this routine is for gathering children from an element. If all of the data you require is in this:
+<data>blah</data> format, then this will not work. if however your data looks like directly below, then you're in luck!
+
+<stuff>
+    <data>blah</data>
+        <interface>
+            <name>dave</name>
+            <speed>depends on beer/sleep ratio</speed>
+            <happy>mostly</happy>
+        </interface>
+        <interface>
+            <name>david</name>
+            <status>meh</status>
+        </interface>
+</stuff>
+ 
+In this case: tkey='data' and tvalue='blah', ROW_FORMAT= 'interface'
+You could also do this: tkey='stuff', tvalue=None, ROW_FORMAT='interface'
+ 
+Entry Key: This is the point at which the _loop_counterator reaches and start's 'looking' for the row keys.
+Row Keys: This is the row tag which contains children elements which will be added into a dictionary within a 'row' construct. 
+Returns: a Dictionary of dictionaries.
 '''
 
-import sys
 from lxml import etree
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -106,6 +129,12 @@ test_data = """<?xml version="1.0" encoding="ISO-8859-1"?>
                                               </mod:ROW_path>
                                             </mod:TABLE_path>
                                           </mod:ROW_prefix>
+                                          <mod:ROW_broken>
+                                            <mod:ipprefix>1.1.1.0/24</mod:ipprefix>
+                                            <mod:ucast-nhops>99</mod:ucast-nhops>
+                                            <mod:mcast-nhops>99</mod:mcast-nhops>
+                                            <mod:attached>ERROR</mod:attached>
+                                          </mod:ROW_broken>
                                         </mod:TABLE_prefix>
                                       </mod:ROW_addrf>
                                     </mod:TABLE_addrf>
@@ -130,69 +159,101 @@ test_data = """<?xml version="1.0" encoding="ISO-8859-1"?>
 """ 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def return_table(raw, TABLE_FORMAT, ROW_FORMAT):
+def return_table(raw, tkey, tvalue, ROW_FORMAT):
     """
     return_table(raw, TABLE_FORMAT, ROW_FORMAT)
-        raw = raw NETCONF data that excludes garbage - see test data
-        TABLE_FORMAT = table entry point - what table do you want to take the rows from?
-        ROW_FORMAT = row entry point - what rows should you be reading from?
+        raw = raw NETCONF test data
+        tkey = table key
+        tvalue = table value
+            These two take some explaining. Why did I opt to do this?
+            Well given this was written in anger to deal with a networking issue, I might want to
+            grab data from a specific set of tables within the XML if it's a large data set.
+            tkey could equal something like 'addrf' or 'TABLE_prefix'. It means you can match on a parent element or
+            set an entry point for a tag that has data and no children.
+            tvalue is the text if it's something like addrf below. See the __main__ routine for usage of examples.
+            
+        ROW_FORMAT = row entry point - what _rows should you be grabbing the children from?
         
-        Note - there isn't boundary checking. If there are different types of ROWs in a table type (unlikely)
-        ROW data may be malformed as it will be included through the loop.
         
     This routine returns a dict of dicts
     """
-    
-    TABLE_FOUND = False
-    ROW = []
-    ROWS = {}
-    ROWS2 = {}
-    IN_ROW = False
-    ROW_ITER = -1
-    DICTO = {}
-    
-    try:
-        parser = etree.XMLParser(remove_blank_text=True)
-        root = etree.XML(str(raw), parser)
-        for el in root.iter('*'):
-            processed = False 
-            if TABLE_FOUND:
-                
-                if ROW_FORMAT in str(el):
-                    IN_ROW = True
-                    
-                if IN_ROW == True:
-                    if ROW_FORMAT in str(el):
-                        ROW_ITER += 1
-                        if "[]" not in str(ROW):
-                            ROWS[ROW_ITER] = ROW
-                            ROWS2[ROW_ITER] = DICTO
-                            ROW = []
-                            DICTO = {}
-                    if ROW_FORMAT not in str(el):
-                        
-                        if (("{" or "}") in str(el.tag)):
-                            _start = el.tag.find("}")
-                            RDATA = { el.tag[_start+1:] : el.text }
-                            DICTO[el.tag[_start+1:]] = el.text
-                            ROW.append(RDATA)
-                        
-                        elif (("{" or "}") not in str(el.tag)):
-                            RDATA = { el.tag : el.text }
-                            DICTO[el.tag] = el.text
-                            ROW.append(RDATA)
-                            
-                        
-                    
-            if TABLE_FORMAT in str(el):
-                TABLE_FOUND = True
+
+    _rows = {}
+    _loop_counter = 0
+    _temp_dict = {}
+    _table_key_dict = { tkey : tvalue }
+    _element_entry_point = []
+    _end_rows = {}
+    debug = False
+
+    parser = etree.XMLParser(remove_blank_text=True)
+    root = etree.XML(str(raw), parser)
+    for el in root.iter('*'):
+        # Seach element.tag and element.text here for things like: addrf = ipv4
         
-        ROW_ITER += 1
-        ROWS[ROW_ITER] = ROW
-        ROWS2[ROW_ITER] = DICTO
-    except:
-        print "Something went wrong!: {0}".format(sys.exc_info()[0])
-    return ROWS2
+        if (("{" or "}") in str(el.tag)):
+            _start = el.tag.find("}")
+            _temp_dict[el.tag[_start+1:]] = el.text
+                    
+        elif (("{" or "}") not in str(el.tag)):
+            _temp_dict[el.tag] = el.text
+        
+        # OK HIT THIS:
+        
+        try:
+            if _table_key_dict.keys() == _temp_dict.keys() and _table_key_dict.values() == _temp_dict.values():
+                if debug:
+                    print "FOUND TABLE INSERT POINT"
+                # Set the external_element reference to 'el' so it doesn't break the _loop_counterator
+                _element_entry_point = el
+                break
+        except:
+            pass
+        
+        _temp_dict= {}
+ 
+    # T__rows = _rows in the TABLE
+    # For ROW in TABLE[X]
+    root = etree.XML(str(raw), parser)
+    root.find(str(_element_entry_point))
+    for el in root.iter('*'):
+        # Seach element.tag and element.text here for things like: addrf = ipv4
+        if (("{" or "}") in str(el.tag)):
+            _start = el.tag.find("}")
+            _temp_dict[el.tag[_start+1:]] = el.text
+                    
+        elif (("{" or "}") not in str(el.tag)):
+            _temp_dict[el.tag] = el.text
+        
+        if _temp_dict.has_key(ROW_FORMAT):
+            if debug:
+                print "FOUND ROW_FORMAT"
+            # NOW Let's load a dictionary with each row
+            _end_rows[_loop_counter] = list(el)
+            if debug:
+                print "FORMED _end_rows[%s]" % str(_loop_counter)
+            _loop_counter += 1
+        _temp_dict = {}
+    
+    for ele in _end_rows:
+
+        # Actual _rows we're interested in
+        for each in _end_rows[ele]:
+            for el in each.iter('*'):
+                
+                if (("{" or "}") in str(el.tag)):
+                    _start = el.tag.find("}")
+                    _temp_dict[el.tag[_start+1:]] = el.text
+                    
+                elif (("{" or "}") not in str(el.tag)):
+                    _temp_dict[el.tag] = el.text
+            
+
+        _rows[_loop_counter] = _temp_dict
+        _temp_dict = {}
+        _loop_counter += 1
+        
+    return _rows
 
 #----------------- MAIN ENTRY POINT ---------------
 if __name__ == '__main__':
@@ -201,14 +262,13 @@ if __name__ == '__main__':
     table_result = {}
     
     # Using our test data, send the data and the TABLE_ENTRY_POINT and ROW_ENTRY_POINT to 'return_table(data, TABLE_FORMAT, ROW_FORMAT)'
-    table_result = return_table(test_data,"TABLE_prefix","ROW_prefix")
-    
-    # Print the returned data
-    print "========== ROWS RETURNED =========="
+    table_result = return_table(test_data,"addrf", "ipv4", "ROW_prefix")
+        
     for each in table_result:
         print table_result[each]
+        
+    table_result = return_table(test_data,"TABLE_prefix", None, "ROW_prefix")    
     
-    # For each row, use some of the data and make it human readable
-    print "\n========== PRETTY PRINT ========== "
+    print ""
     for each in table_result:
-        print "PREFIX: " + str(table_result[each].get("ipprefix")) + " NEXT-HOP " + str(table_result[each].get("ipnexthop")) 
+        print table_result[each]
