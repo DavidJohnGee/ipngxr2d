@@ -211,6 +211,10 @@ def return_table(raw, tkey, tvalue, ROW_FORMAT):
             pass
         
         _temp_dict= {}
+    
+    # If our search failed, just return empty else it will cause other parsing issues
+    if _element_entry_point == []:
+        return _rows
  
     # T__rows = _rows in the TABLE
     # For ROW in TABLE[X]
