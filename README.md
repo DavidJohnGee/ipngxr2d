@@ -4,7 +4,7 @@ Python - NETCONF-table-to-dictionary
 This Python function takes in XML and irrelevant of namespaces returns children of elements based on entry key and row match.
 Acknowledge this routine is for gathering children from an element. 
 
-"""
+```xml
 <stuff>
     <data>blah</data>
         <interface>
@@ -17,7 +17,7 @@ Acknowledge this routine is for gathering children from an element.
             <status>meh</status>
         </interface>
 </stuff>
-"""
+```
 
 In this case: tkey='data' and tvalue='blah', ROW_FORMAT= 'interface'
 You could also do this: tkey='stuff', tvalue=None, ROW_FORMAT='interface'
