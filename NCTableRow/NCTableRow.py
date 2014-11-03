@@ -156,7 +156,10 @@ test_data = """<?xml version="1.0" encoding="ISO-8859-1"?>
     </mod:show>
   </data>
 </rpc-reply>
-""" 
+"""
+
+cmd_clear_mac_address = "clear mac address-table dynamic address %s"
+
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def return_table(raw, tkey, tvalue, ROW_FORMAT):
@@ -211,6 +214,10 @@ def return_table(raw, tkey, tvalue, ROW_FORMAT):
             pass
         
         _temp_dict= {}
+    
+    # If our search failed, just return empty
+    if _element_entry_point == []:
+        return _rows
  
     # T__rows = _rows in the TABLE
     # For ROW in TABLE[X]
@@ -271,4 +278,5 @@ if __name__ == '__main__':
     
     print ""
     for each in table_result:
-        print table_result[each]
+        print table_result[each]  
+    
