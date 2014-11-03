@@ -215,7 +215,11 @@ def return_table(raw, tkey, tvalue, ROW_FORMAT):
         
         _temp_dict= {}
     
+<<<<<<< HEAD
     # If our search failed, just return empty
+=======
+    # If our search failed, just return empty else it will cause other parsing issues
+>>>>>>> FETCH_HEAD
     if _element_entry_point == []:
         return _rows
  
