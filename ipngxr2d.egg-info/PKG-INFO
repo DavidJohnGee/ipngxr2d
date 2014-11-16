@@ -1,0 +1,18 @@
+Metadata-Version: 1.1
+Name: ipngxr2d
+Version: 0.1
+Summary: Python XML parsing utility
+Home-page: https://github.com/DavidJohnGee/ipngxr2d
+Author: David Gee
+Author-email: david.gee@ipengineer.net
+License: Apache License 2.0
+Description: Python XML utility for returning a dictionary of dictionaries from XML children.
+Keywords: XML Parser
+Platform: Posix; OS X; Windows
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: System :: Networking
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
