@@ -14,7 +14,7 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 6:
     print "Sorry, Python < 2.6 is not supported"
     exit()
 
-setup(name='nctablerow',
+setup(name='ipngxr2d',
       version='0.1',
       description="Python XML parsing utility",
       long_description = "Python XML utility for returning a dictionary of dictionaries from XML children.",
