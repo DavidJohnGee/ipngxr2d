@@ -215,11 +215,8 @@ def return_table(raw, tkey, tvalue, ROW_FORMAT):
         
         _temp_dict= {}
     
-<<<<<<< HEAD
-    # If our search failed, just return empty
-=======
+
     # If our search failed, just return empty else it will cause other parsing issues
->>>>>>> FETCH_HEAD
     if _element_entry_point == []:
         return _rows
  
@@ -274,13 +271,14 @@ if __name__ == '__main__':
     
     # Using our test data, send the data and the TABLE_ENTRY_POINT and ROW_ENTRY_POINT to 'return_table(data, TABLE_FORMAT, ROW_FORMAT)'
     table_result = return_table(test_data,"addrf", "ipv4", "ROW_prefix")
-        
+    
+    print "TEST 1"    
     for each in table_result:
         print table_result[each]
         
     table_result = return_table(test_data,"TABLE_prefix", None, "ROW_prefix")    
     
-    print ""
+    print "TEST 2"
     for each in table_result:
         print table_result[each]  
     
