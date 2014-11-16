@@ -1,4 +1,4 @@
-Python - NETCONF-table-to-dictionary
+Python - ipngxr2d
 ====================================
 
 This Python function takes in XML and irrelevant of namespaces returns children of elements based on entry key and row match.
