@@ -1,7 +1,7 @@
 Metadata-Version: 1.1
 Name: ipngxr2d
 Version: 0.1
-Summary: Python XML parsing utility
+Summary: Python XML parsing utility returning dictionary of children (uses lxml)
 Home-page: https://github.com/DavidJohnGee/ipngxr2d
 Author: David Gee
 Author-email: david.gee@ipengineer.net
